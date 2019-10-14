@@ -51,7 +51,7 @@ if (strpos($_SERVER['REQUEST_URI'], "search")) { // hàm ktra chuỗi trước c
 $lsFromFile = Book::getListFromFile($keyWord);
 
 /**
- * Phân trang hello
+ * Phân trang
  */
 if (isset($_REQUEST["page"])) { 
   $page = $_REQUEST["page"]; 
