@@ -48,9 +48,9 @@
   </li>
 
   <li class="nav-item">
-    <a class="nav-link collapsed" href="QTHT.php" >
+    <a class="nav-link collapsed" href="bai5.php" >
       <i class="fas fa-fw fa-cog"></i>
-      <span>Quá trình học tập</span>
+      <span>Bai 5</span>
     </a>
   </li>
 

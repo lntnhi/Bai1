@@ -17,7 +17,7 @@ class User {
      * @return User hoặc null nếu không tồn tại
      */
     static function authentication ($username, $password) {
-        if ($username == "sauxinhdep" && $password=="123")
+        if ($username == "admin" && $password=="123")
             return new User($username, $password, "Nhi");
         else return null;
     }
