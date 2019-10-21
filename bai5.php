@@ -35,7 +35,8 @@ if (!isset($_SESSION["user"])) {
 
                 // str+="</ul>";
 
-                document.getElementById("contentAjax").innerHTML = str;
+                //document.getElementById("contentAjax").innerHTML = str;
+                document.getElementById("contentAjax").innerHTML = this.responseText;
             }
         }
         xhttp.open("GET","testajax.php?username=admin",true);
