@@ -2,17 +2,17 @@
 class Book {
     #properties
     var $id;
-    var $price;
     var $title;
+    var $price;
     var $author;
     var $year;
     #endProperties
 
     #Construct function
-    function __construct ($id, $price, $title, $author, $year) {
+    function __construct ($id, $title, $price, $author, $year) {
         $this->id = $id;
-        $this->price = $price;
         $this->title = $title;
+        $this->price = $price;
         $this->author = $author;
         $this->year = $year;
     }
@@ -42,7 +42,7 @@ class Book {
     /**
      * Lấy dữ liệu từ file / Tìm kiếm
      */
-    static function getListFromFile($search = null){
+    static function getListFromFile($search = null) {
         $data = file("data/book.txt");
         $arrBook = [];
         foreach($data as $key => $value){
@@ -56,14 +56,70 @@ class Book {
         }
         return $arrBook;
     }
+
+    /**
+     * Lấy dữ lịu từ db
+     */
+    static function connect () {
+        $con = new mysqli("localhost","root","","BookManager");
+        $con->set_charset("utf8");
+        if ($con->connect_error)
+            die("Kết nối thất bại. Chi tiết: " . $con->connect_error);
+        return $con;
+    }
+    static function getListFromDB() {
+        $con = Book::connect();
+        $sql = "SELECT * FROM Book";
+        $res = $con->query($sql);
+        $lsBook = [];
+        if ($res->num_rows > 0) {
+            while($row = $res->fetch_assoc()) {
+                $book = new Book($row["ID"],$row["Title"],$row["Price"],$row["Author"],$row["Year"]);
+                array_push($lsBook,$book);
+            }
+        }
+        $con->close();
+        return $lsBook;
+    }
+
     /**
      * Add
      */
-    static function addToFile($content){
+    static function addToFile($content) {
         $myfile = fopen("data/book.txt", "a") or die("Unable to open file!");
         fwrite($myfile, "\n". $content);
         fclose($myfile);
     }
+    static function addToDB ($title, $price, $author, $year) {
+          $con = Book::connect();
+          $sql = "INSERT INTO Book(Title,Price,Author,Year) VALUES ('$title', $price, '$author', $year)";
+          $res = $con->query($sql);
+          $con->close();
+    }
+    
+    /**
+     * Chỉnh sửa
+     */
+    static function edit(Book $content){
+        $data = Book::getListFromFile();
+        $text_write = "";
+        $myfile = fopen("data/book.txt", "w") or die("Unable to open file!");
+        foreach($data as $key => $value){          
+            if( $content->id == $value->id){
+                $text_write.= $content->id."#".$content->price."#".$content->title."#".$content->author."#".$content->year;             
+            }  
+            else $text_write.= $value->id."#".$value->price."#".$value->title."#".$value->author."#".$value->year;
+        }       
+        fwrite($myfile, $text_write);
+        fclose($myfile);
+    }
+    static function editDB ($id, $title, $price, $author, $year) {
+         $con = Book::connect();
+         $sql = "UPDATE Book SET Title = '$title', Price = $price, Author = '$author', Year = $year WHERE Book.ID=$id";
+         $res = $con->query($sql);
+         $con->close();
+    }
+
     /**
      * Xóa
      */
@@ -83,21 +139,11 @@ class Book {
         fwrite($myfile, $text_write);
         fclose($myfile);
     }
-    /**
-     * Chỉnh sửa
-     */
-    static function edit(Book $content){
-        $data = Book::getListFromFile();
-        $text_write = "";
-        $myfile = fopen("data/book.txt", "w") or die("Unable to open file!");
-        foreach($data as $key => $value){          
-            if( $content->id == $value->id){
-                $text_write.= $content->id."#".$content->price."#".$content->title."#".$content->author."#".$content->year;             
-            }  
-            else $text_write.= $value->id."#".$value->price."#".$value->title."#".$value->author."#".$value->year;
-        }       
-        fwrite($myfile, $text_write);
-        fclose($myfile);
+    static function deleteDB($id) {
+        $con = Book::connect();
+         $sql = "DELETE FROM Book WHERE Book.ID=$id";
+         $res = $con->query($sql);
+         $con->close();
     }
     /**
      * Tự tăng STT
@@ -116,7 +162,7 @@ class Book {
      */
     static function getBookOfPage($page){
         $tempArr = array();
-        $listBook = Book::getListFromFile();
+        $listBook = Book::getListFromDB();
         $startItem = ($page-1)*5;
         $endItem = $startItem + 4;
         for ($i = $startItem; $i <= $endItem; $i++) {

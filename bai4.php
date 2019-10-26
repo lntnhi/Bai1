@@ -11,13 +11,14 @@ include_once("model/book.php"); //nhét file book.php vô để xài
  * Thêm mới
  */
 if (isset($_REQUEST["add"])) {
-  $id = Book::getSTT();
+  //$id = Book::getSTT();
   $title = $_REQUEST["title"];
   $price = $_REQUEST["price"];
   $author = $_REQUEST["author"];
   $year = $_REQUEST["year"];
-  $content = $id . "#" . $price . "#" . $title . "#" . $author . "#" . $year;
-  Book::addToFile($content);
+  //$content = $id . "#" . $price . "#" . $title . "#" . $author . "#" . $year;
+  //Book::addToFile($content);
+  Book::addToDB($title,$price,$author,$year);
 }
 
 /**
@@ -29,8 +30,9 @@ if (isset($_REQUEST["edit"])) {
 	$price = $_REQUEST["price"];
 	$author = $_REQUEST["author"];
 	$year = $_REQUEST["year"];
-	$bookEditer =  new Book($id, $price, $title, $author, $year);
-	Book::edit($bookEditer);
+	//$bookEditer =  new Book($id, $price, $title, $author, $year);
+  //Book::edit($bookEditer);
+  Book::editDB($id, $title, $price, $author, $year);
 }
 
 /**
@@ -38,7 +40,7 @@ if (isset($_REQUEST["edit"])) {
  */
 if (isset($_REQUEST["del"])) {
   $id = $_REQUEST["del"];
-  Book::delete($id);
+  Book::deleteDB($id);
 }
 
 /**
@@ -49,16 +51,17 @@ if (strpos($_SERVER['REQUEST_URI'], "search")) { // hàm ktra chuỗi trước c
   $keyWord = $_REQUEST['search'];
 }
 $lsFromFile = Book::getListFromFile($keyWord);
+$lsFromDB = Book::getListFromDB();
 
 /**
  * Phân trang
  */
 if (isset($_REQUEST["page"])) { 
   $page = $_REQUEST["page"]; 
-  $lsFromFile = Book::getBookOfPage($page);
+  $lsFromDB = Book::getBookOfPage($page);
 } else { 
   $page=1; 
-  $lsFromFile = Book::getBookOfPage($page);
+  $lsFromDB = Book::getBookOfPage($page);
 } 
 
 /**
@@ -86,13 +89,13 @@ if (isset($_REQUEST["page"])) {
     </thead>
     <tbody>
       <?php
-      for ($i = 0; $i < count($lsFromFile); $i++) { ?>
+      for ($i = 0; $i < count($lsFromDB); $i++) { ?>
         <tr>
-          <th scope="row"><?php echo $lsFromFile[$i]->id ?></th>
-          <td><?php echo $lsFromFile[$i]->title ?></td>
-          <td><?php echo $lsFromFile[$i]->price ?></td>
-          <td><?php echo $lsFromFile[$i]->author ?></td>
-          <td><?php echo $lsFromFile[$i]->year ?></td>
+          <th scope="row"><?php echo $lsFromDB[$i]->id ?></th>
+          <td><?php echo $lsFromDB[$i]->title ?></td>
+          <td><?php echo $lsFromDB[$i]->price ?></td>
+          <td><?php echo $lsFromDB[$i]->author ?></td>
+          <td><?php echo $lsFromDB[$i]->year ?></td>
           <td class="d-flex">
             <button class="btn btn-outline-info mr-3" data-toggle="modal" data-target="#editItem<?php echo $i ?>"><i class="far fa-edit"></i> Sửa</button>
             <button class="btn btn-outline-danger" name="delete" data-toggle="modal" data-target="#deleteItem<?php echo $i ?>"><i class="fas fa-trash-alt"></i> Xóa</button>
@@ -111,23 +114,23 @@ if (isset($_REQUEST["page"])) {
 											<form>
 												<div class="form-group ">
 													<label for="from">Tên</label>
-													<input type="text" name="title" class="form-control" value="<?php echo $lsFromFile[$i]->title ?>" placeholder="Tên">
+													<input type="text" name="title" class="form-control" value="<?php echo $lsFromDB[$i]->title ?>" placeholder="Tên">
 												</div>
 												<div class="form-group">
 													<label for="to">Giá</label>
-													<input type="number" name="price" class="form-control" value="<?php echo $lsFromFile[$i]->price ?>" placeholder="Giá">
+													<input type="number" name="price" class="form-control" value="<?php echo $lsFromDB[$i]->price ?>" placeholder="Giá">
 												</div>
 												<div class="form-group">
 													<label for="class">Tác giả</label>
-													<input type="text" name="author" class="form-control" value="<?php echo $lsFromFile[$i]->author ?>" placeholder="Tác giả">
+													<input type="text" name="author" class="form-control" value="<?php echo $lsFromDB[$i]->author ?>" placeholder="Tác giả">
 												</div>
 												<div class="form-group">
 													<label for="place">Năm</label>
-													<input type="text" name="year" class="form-control" value="<?php echo $lsFromFile[$i]->year ?>" placeholder="Năm">
+													<input type="text" name="year" class="form-control" value="<?php echo $lsFromDB[$i]->year ?>" placeholder="Năm">
 												</div>
 												<div class="modal-footer">
 												<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-													<button class="btn btn-primary" name="edit" type="submit" value="<?php echo $lsFromFile[$i]->id ?>">Save changes</button>
+													<button class="btn btn-primary" name="edit" type="submit" value="<?php echo $lsFromDB[$i]->id ?>">Save changes</button>
 												</div>
 											</form>
 										</div>
@@ -148,7 +151,7 @@ if (isset($_REQUEST["page"])) {
                     </div>
                     <div class="modal-body">Do you want to delete this?</div>
                     <div class="modal-footer">
-                      <button class="btn btn-danger" name="del" type="submit" value="<?php echo $lsFromFile[$i]->id ?>">Delete</button>
+                      <button class="btn btn-danger" name="del" type="submit" value="<?php echo $lsFromDB[$i]->id ?>">Delete</button>
                       <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                     </div>
                   </div>
@@ -164,7 +167,7 @@ if (isset($_REQUEST["page"])) {
   <!--Phân trang-->
 <?php
 $limit = 5;
-$listBook = Book::getListFromFile();
+$listBook = Book::getListFromDB();
 $total_pages = ceil(sizeof($listBook) / $limit); //hàm làm tròn giá trị của số n,mpq thành n+1
 ?>
 <nav aria-label="Page navigation example">
@@ -219,7 +222,7 @@ $total_pages = ceil(sizeof($listBook) / $limit); //hàm làm tròn giá trị c�
         </button>
       </div>
       <div class="modal-body">
-        <form method="post">
+        <form method="get">
           <div class="form-group ">
             <label for="from">Tên</label>
             <input type="text" class="form-control" name="title" placeholder="Tên">
