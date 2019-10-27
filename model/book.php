@@ -58,7 +58,7 @@ class Book {
     }
 
     /**
-     * Lấy dữ lịu từ db
+     * Lấy dữ liệu từ db và Hiển thị + Tìm kiếm
      */
     static function connect () {
         $con = new mysqli("localhost","root","","BookManager");
@@ -67,9 +67,11 @@ class Book {
             die("Kết nối thất bại. Chi tiết: " . $con->connect_error);
         return $con;
     }
-    static function getListFromDB() {
+
+    static function getListFromDB($search = null) {
         $con = Book::connect();
-        $sql = "SELECT * FROM Book";
+        $sql = "SELECT * FROM Book 
+                WHERE (ID LIKE '%$search%') OR (Title LIKE '%$search%') OR (Price LIKE '%$search%') OR (Author LIKE '%$search%') OR (Year LIKE '%$search%')";
         $res = $con->query($sql);
         $lsBook = [];
         if ($res->num_rows > 0) {
@@ -160,9 +162,9 @@ class Book {
     /**
      * Phân trang
      */
-    static function getBookOfPage($page){
+    static function getBookOfPage($page,$keyWord){
         $tempArr = array();
-        $listBook = Book::getListFromDB();
+        $listBook = Book::getListFromDB($keyWord);
         $startItem = ($page-1)*5;
         $endItem = $startItem + 4;
         for ($i = $startItem; $i <= $endItem; $i++) {
