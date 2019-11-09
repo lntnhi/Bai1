@@ -1,17 +1,18 @@
 <?php
 session_start(); //Khởi động session
 if (isset($_SESSION["user"])) {
-    header("location:index.php"); //login rồi thì bấm vô trang login thì cũng ở trang index
+    header("location:contact.php"); //login rồi thì bấm vô trang login thì cũng ở trang index
 }
 include_once("model/user.php");
 $info = "";
 if ($_SERVER["REQUEST_METHOD"]=="POST") { // là đã có thông tin lên rồi hihi
     $username = $_REQUEST["username"];
     $password = $_REQUEST["password"];
-    $user = User::authentication($username,$password);
+    $list = User::getList();
+    $user = User::authentication($username,$password,$list);
     if ($user!=null) {
         $_SESSION["user"] = serialize($user); //biến user thành 1 chuỗi để lưu zô session
-        header("location:index.php"); //chuyển hướng qua index
+        header("location:contact.php"); //chuyển hướng qua index
     }
     else {
         $info = "Đăng nhập thất bại";
