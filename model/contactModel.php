@@ -25,7 +25,9 @@ class Contact {
 
     static function getListAll($username, $keyword=null) {
         $con = Contact::connect();
-        $sql = "SELECT * FROM Contact WHERE Username = '$username' AND (Name LIKE '%$keyword%' OR Email LIKE '%$keyword%' OR PhoneNumber LIKE '%$keyword%')";
+        $sql = "SELECT * FROM Contact 
+                WHERE Username = '$username' AND (Name LIKE '%$keyword%' OR Email LIKE '%$keyword%' OR PhoneNumber LIKE '%$keyword%')
+                ORDER BY Name";
         $res = $con->query($sql);
         $ls = [];
         if ($res->num_rows > 0) {
@@ -51,6 +53,16 @@ class Contact {
         }
         $con->close();
         return $ls;
+    }
+
+    /**
+     * Add
+     */
+    static function addContact ($name, $email, $phoneNumber, $username) {
+        $con = Contact::connect();
+        $sql = "INSERT INTO Contact(Name, Email, PhoneNumber, Username) VALUES ('$name','$email','$phoneNumber','$username')";
+        $res = $con->query($sql);
+        $con->close();
     }
 }
 ?>

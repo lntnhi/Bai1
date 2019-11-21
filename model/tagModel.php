@@ -21,12 +21,15 @@ class Tag {
         return $con;
     }
 
+    /**
+     * Lấy dữ liệu
+     */
     static function getList($username) {
         $con = Tag::connect();
         $sql = "SELECT tag.ID, tag.Name, COUNT(ContactID) AS Quantity 
-                FROM Tag INNER JOIN contact_tag ON contact_tag.TagID = tag.ID 
+                FROM Tag LEFT JOIN contact_tag ON contact_tag.TagID = tag.ID 
                 WHERE tag.Username = '$username'
-                GROUP BY TagID";
+                GROUP BY tag.Name";
         $res = $con->query($sql);
         $ls = [];
         if ($res->num_rows > 0) {
@@ -38,5 +41,22 @@ class Tag {
         $con->close();
         return $ls;
     }
+
+    /**
+     * Add
+     */
+    static function addTag ($name, $username) {
+        $ls = Tag::getList($username);
+        $x=0;
+        foreach ($ls as $key => $value) {
+             if ($value->name == $name) $x=1;
+        }
+        if ($x==0) {
+            $con = Tag::connect();
+            $sql = "INSERT INTO Tag(Name, Username) VALUES ('$name','$username')";
+            $res = $con->query($sql);
+            $con->close();
+        }
+  }
 }
 ?>
