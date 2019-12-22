@@ -9,7 +9,7 @@ if (!isset($_SESSION["user"])) {
 include_once("header.php");
 
 $user = unserialize($_SESSION["user"]);
-
+var_dump($user);
 /**
  * Thêm mới tag
  */

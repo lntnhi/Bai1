@@ -27,7 +27,7 @@ class Book {
 
     #Mock Data
     /**
-     * Lấy toàn bộ các cuốn sách có trong CSDL
+     * Lấy toàn bộ các cuốn sách
      */
     static function getList() {
         $listBook = array();
