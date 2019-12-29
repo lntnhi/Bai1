@@ -13,5 +13,7 @@
     
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    </head>
+    <!-- CKEditor -->
+	<script src="https://cdn.ckeditor.com/4.13.0/full/ckeditor.js"></script>
+</head>
 <body>
